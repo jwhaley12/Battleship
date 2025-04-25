@@ -24,6 +24,9 @@ public class Game {
                 break;
             }
             board.checkGuess(guess);
+            if(board.getTotalShips() == 0){
+                break;
+            }
         }
 
 
