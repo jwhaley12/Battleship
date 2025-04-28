@@ -13,7 +13,6 @@ public class Board {
     private final int boardWidth;
     private final HashMap<Coordinate, Integer> coordinatesUsed;
     private int totalShips;
-    private int triesLeft;
     private HashMap<Coordinate, String> guessesMade;
 
     public Board(){
@@ -22,7 +21,6 @@ public class Board {
         this.coordinatesUsed = new HashMap<>();
         this.guessesMade = new HashMap<>();
         this.totalShips = 0;
-        this.triesLeft = 5;
         this.board = new String[][]{
                 {"~", "~", "~", "~", "~", "~", "~"},
                 {"~", "~", "~", "~", "~", "~", "~"},
@@ -115,7 +113,7 @@ public class Board {
         for(int j = 0; j < length; j++){
             Coordinate coordinate = new Coordinate(calculateY.apply(j), calculateX.apply(j));
             if(this.coordinatesUsed.get(coordinate) != null){
-                return new Coordinate[]{};
+                return null;
             }
             usedCords[j] = coordinate;
         }
@@ -136,15 +134,11 @@ public class Board {
 
     private void updateBoardWithHitOrMiss(String updateType, Coordinate coordinate){
         if(updateType.equals("Miss")){
-            this.triesLeft -= 1;
-            System.out.println("Miss! Tries left: " + this.triesLeft);
             int y = coordinate.getY();
             int x = coordinate.getX();
             this.board[y][x] = "O";
         }
         else if(updateType.equals("Hit")) {
-            this.triesLeft = 5;
-            System.out.println("Hit! Tries left: " + this.triesLeft);
             int y = coordinate.getY();
             int x = coordinate.getX();
             this.board[y][x] = "X";
@@ -163,10 +157,10 @@ public class Board {
         }
     }
 
-    public void checkGuess(String guess){
+    public String checkGuess(String guess){
         if(guess.length() != 3 || !guess.contains(",")){
             System.out.println("Invalid guess. Please Try again");
-            return;
+            return "Invalid";
         }
 
         String[] guesses = guess.split(",");
@@ -176,7 +170,7 @@ public class Board {
         Coordinate coordinateGuess = new Coordinate(y, x);
         if(guessesMade.get(coordinateGuess) != null){
             System.out.println("Guess already made");
-            return;
+            return "Picked";
         }
 
         guessesMade.put(coordinateGuess, "t");
@@ -185,7 +179,7 @@ public class Board {
         System.out.println(shipID);
         if(shipID == null){
             updateBoardWithHitOrMiss("Miss", coordinateGuess);
-            return;
+            return "Miss";
         }
 
         Ship ship = this.ships.get(shipID);
@@ -197,6 +191,8 @@ public class Board {
             this.totalShips -= 1;
             System.out.println("Remaining ships: " + this.totalShips);
         }
+
+        return "Hit";
 
     }
 
